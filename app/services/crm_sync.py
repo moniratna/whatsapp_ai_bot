@@ -24,11 +24,20 @@ async def sync_client_to_crm(client_id: str) -> None:
             "full_name": client.full_name,
             "email": client.email,
             "requirements": {
+                "intent": req.intent,
                 "transaction_type": req.transaction_type,
                 "purpose": req.purpose,
                 "property_types": req.property_types,
                 "bedrooms_min": req.bedrooms_min,
                 "bedrooms_max": req.bedrooms_max,
+                "country": req.country,
+                "city_region": req.city_region,
+                "preferred_locations": req.preferred_locations or req.preferred_communities,
+                "budget_min": req.budget_min if req.budget_min is not None else req.budget_min_aed,
+                "budget_max": req.budget_max if req.budget_max is not None else req.budget_max_aed,
+                "budget_currency": req.budget_currency
+                or ("AED" if req.budget_max_aed is not None else None),
+                # Retained for consumers of the legacy UAE-specific contract.
                 "emirate": req.emirate,
                 "preferred_communities": req.preferred_communities,
                 "budget_min_aed": req.budget_min_aed,
@@ -42,6 +51,13 @@ async def sync_client_to_crm(client_id: str) -> None:
                 {
                     "location": p.location,
                     "property_type": p.property_type,
+                    "estimated_value": (
+                        p.estimated_value
+                        if p.estimated_value is not None
+                        else p.estimated_value_aed
+                    ),
+                    "estimated_value_currency": p.estimated_value_currency
+                    or ("AED" if p.estimated_value_aed is not None else None),
                     "estimated_value_aed": p.estimated_value_aed,
                     "status": p.status,
                     "intent": p.intent,

@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import (
     JSON,
     BigInteger,
+    Boolean,
     Column,
     DateTime,
     ForeignKey,
@@ -67,7 +68,7 @@ class Client(Base):
 
 
 class ClientRequirement(Base):
-    """Structured UAE property requirements for future inventory matchmaking."""
+    """Structured property requirements for future inventory matchmaking."""
 
     __tablename__ = "client_requirements"
 
@@ -75,6 +76,8 @@ class ClientRequirement(Base):
     client_id = Column(
         UUID(as_uuid=True), ForeignKey("clients.id"), unique=True, nullable=False
     )
+
+    intent = Column(String, nullable=True)  # predefined lead intent
 
     transaction_type = Column(String, nullable=True)  # buy | rent | off_plan
     purpose = Column(
@@ -86,11 +89,16 @@ class ClientRequirement(Base):
     bedrooms_min = Column(Integer, nullable=True)
     bedrooms_max = Column(Integer, nullable=True)
 
-    emirate = Column(
-        String, default="Dubai", nullable=True
-    )  # Dubai | Abu Dhabi | RAK | Sharjah
+    country = Column(String, nullable=True)
+    city_region = Column(String, nullable=True)
+    location_confirmed = Column(Boolean, default=False, nullable=False)
+    preferred_locations = Column(ARRAY(String), default=list, nullable=False)
+    emirate = Column(String, nullable=True)  # legacy compatibility
     preferred_communities = Column(ARRAY(String), default=list)
 
+    budget_min = Column(BigInteger, nullable=True)
+    budget_max = Column(BigInteger, nullable=True)
+    budget_currency = Column(String(3), nullable=True)
     budget_min_aed = Column(BigInteger, nullable=True)
     budget_max_aed = Column(BigInteger, nullable=True)
     payment_method = Column(String, nullable=True)  # cash | mortgage | payment_plan
@@ -124,7 +132,9 @@ class ClientPortfolioItem(Base):
 
     location = Column(String, nullable=False)  # e.g., "Dubai Marina" or "London"
     property_type = Column(String, nullable=True)  # e.g., "2BR Apartment"
-    estimated_value_aed = Column(BigInteger, nullable=True)
+    estimated_value = Column(BigInteger, nullable=True)
+    estimated_value_currency = Column(String(3), nullable=True)
+    estimated_value_aed = Column(BigInteger, nullable=True)  # legacy compatibility
     status = Column(
         String, nullable=True
     )  # rented | vacant | primary_residence | mortgaged

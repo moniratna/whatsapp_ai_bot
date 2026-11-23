@@ -31,7 +31,7 @@ class BotEngine:
         # State machine (ready to be replaced/augmented with AI later)
         if conv.current_step == "GREETING":
             reply = (
-                "Hello! Welcome to our Real Estate Assistant.\n"
+                "Hi, I’m Robin, your real-estate assistant.\n"
                 "What type of property are you looking to buy or rent? "
                 "(e.g., Apartment, Villa, Plot, Commercial)"
             )
